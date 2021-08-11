@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+    <p>My Articles</p>
+    <%articles.forEach(article=>{%>
+    <a href="/articles/<%= article._id%>/">
+      <p><%= article.title%></p>
+    </a>
+    <%})%>
+  </body>
+</html>
