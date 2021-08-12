@@ -2,11 +2,12 @@ var express = require('express');
 var router = express.Router();
 var Blog = require('../models/blogs');
 var Comments = require('../models/comments');
+const isLoggedIn = require('../middleware/auth');
 /* GET users listing. */
-router.get('/new', function (req, res, next) {
+router.get('/new', isLoggedIn, function (req, res, next) {
   res.render('addArticle');
 });
-router.get('/', function (req, res, next) {
+router.get('/', isLoggedIn, function (req, res, next) {
   Blog.find({}, (err, articles) => {
     res.render('articles', { articles: articles });
   });
@@ -22,7 +23,7 @@ router.get('/', function (req, res, next) {
 //   });
 // });
 
-router.get('/:id', function (req, res, next) {
+router.get('/:id', isLoggedIn, function (req, res, next) {
   var id = req.params.id;
   Blog.findById(id)
     .populate('comments')
@@ -32,28 +33,28 @@ router.get('/:id', function (req, res, next) {
     });
 });
 
-router.get('/:id/edit', function (req, res, next) {
+router.get('/:id/edit', isLoggedIn, function (req, res, next) {
   var id = req.params.id;
   Blog.findById(id, (err, articles) => {
     if (err) return next(err);
     res.render('editArticle', { articles: articles });
   });
 });
-router.post('/', function (req, res, next) {
+router.post('/', isLoggedIn, function (req, res, next) {
   Blog.create(req.body, (err, createArticle) => {
     console.log(err, createArticle);
     if (err) return next(err);
     res.redirect('/articles');
   });
 });
-router.post('/:id', function (req, res, next) {
+router.post('/:id', isLoggedIn, function (req, res, next) {
   var id = req.params.id;
   Blog.findByIdAndUpdate(id, req.body, (err, createArticle) => {
     if (err) return next(err);
     res.redirect('/articles/' + id);
   });
 });
-router.get('/:id/delete', function (req, res, next) {
+router.get('/:id/delete', isLoggedIn, function (req, res, next) {
   var id = req.params.id;
   Blog.findByIdAndDelete(id, (err, createArticle) => {
     if (err) return next(err);
@@ -63,7 +64,7 @@ router.get('/:id/delete', function (req, res, next) {
     });
   });
 });
-router.post('/:id/comments', function (req, res, next) {
+router.post('/:id/comments', isLoggedIn, function (req, res, next) {
   var id = req.params.id;
   req.body.articleId = id;
   Comments.create(req.body, (err, comment) => {
@@ -78,7 +79,7 @@ router.post('/:id/comments', function (req, res, next) {
     );
   });
 });
-router.get('/:id/likes', (req, res) => {
+router.get('/:id/likes', isLoggedIn, (req, res) => {
   var id = req.params.id;
   Blog.findByIdAndUpdate(id, { $inc: { likes: 1 } }, (err, article) => {
     if (err) return next(err);
