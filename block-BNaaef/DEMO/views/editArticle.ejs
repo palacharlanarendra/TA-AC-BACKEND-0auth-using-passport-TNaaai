@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Articles</title>
+  </head>
+  <body>
+    <form method="POST" action="/articles/<%= articles.id%>">
+      <fieldset>
+        <input
+          name="title"
+          type="text"
+          placeholder="title"
+          value="<%= articles.title%>"
+        />
+        <input
+          name="description"
+          type="text"
+          placeholder="description"
+          value="<%= articles.description%>"
+        />
+        <input
+          name="likes"
+          type="number"
+          placeholder="likes"
+          value="<%= articles.likes%>"
+        />
+        <input
+          name="author"
+          type="text"
+          placeholder="author"
+          value="<%= articles.author%>"
+        />
+        <input type="submit" value="submit" />
+      </fieldset>
+    </form>
+  </body>
+</html>
