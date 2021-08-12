@@ -1,44 +1,39 @@
 // var passport = require('passport');
 var GitHubStrategy = require('passport-github').Strategy;
-// var LocalStrategy = require('passport-local').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
 var User = require('../models/User');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
-
 var passport = require('passport');
 const bcryptjs = require('bcryptjs');
-var localStrategy = require('passport-local').Strategy;
 
 passport.use(
-  new localStrategy({ usernameField: 'email' }, (email, password, done) => {
-    user.findOne({ email: email }, (err, data) => {
-      if (err) throw err;
-      if (!data) {
-        return done(null, false, { message: "User Doesn't Exist !" });
-      }
-      bcryptjs.compare(password, data.password, (err, match) => {
+  new LocalStrategy(
+    {
+      usernameField: 'email',
+      passwordField: 'password',
+    },
+    function (email, password, done) {
+      User.findOne({ email }, function (err, user) {
         if (err) {
+          return done(err);
+        }
+        if (!user) {
           return done(null, false);
         }
-        if (!match) {
-          return done(null, false, { message: "Password Doesn't match !" });
-        }
-        if (match) {
-          return done(null, data);
+        if (
+          user.verifyPassword(password, (err, result) => {
+            console.log(err, result, 'xxxxx');
+            if (result) {
+              return done(null, user);
+            }
+          })
+        ) {
+          return done(null, user);
         }
       });
-    });
-  })
+    }
+  )
 );
-
-passport.serializeUser(function (user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function (id, done) {
-  user.findById(id, function (err, user) {
-    done(err, user);
-  });
-});
 
 passport.use(
   new GoogleStrategy(
