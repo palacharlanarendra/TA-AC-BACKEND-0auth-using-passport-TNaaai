@@ -25,21 +25,22 @@ router.get('/login', function (req, res, next) {
 router.get('/loginSuccess', function (req, res, next) {
   let email = req.session.email;
   User.findOne({ email }, (err, user) => {
-    var fullName = user.fullName();
-    res.render('success', { fullName });
+    res.render('success');
   });
 });
 
-router.post('/login', (req, res) => {
-  console.log({ d: req.body });
-
-  passport.authenticate('local', {
-    successRedirect: '/users/loginSuccess',
-    failureRedirect: '/users/login',
-    failureFlash: true,
-  });
+router.post('/login', function (req, res, next) {
+  passport.authenticate('local', function (err, user, info) {
+    if (user) {
+      return res.redirect('/users/loginSuccess');
+    }
+    return res.redirect('/users/login');
+  })(req, res, next);
 });
 
+// router.post('/login', passport.authenticate('local'), function (req, res) {
+//   console.log('passport user', req, res);
+// });
 // router.post('/login', (req, res, next) => {
 //   var { email, password } = req.body;
 //   if (!email || !password) {
